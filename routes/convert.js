@@ -135,7 +135,7 @@ router.get('/', async (req, res) => {
                 formData.append('file', fileObject, fileName)
 
                 // Make a request to upload the files to Directus
-                await client.request(uploadFiles(formData))
+                const directus_res = await client.request(uploadFiles(formData))
 
                 // Log a success message
                 console.log(`File uploaded successfully to Directus for ${id}`)
@@ -145,7 +145,7 @@ router.get('/', async (req, res) => {
                 fs.unlinkSync(audioPath)
                 fs.unlinkSync(outputPath)
 
-                res.status(200).send('File uploaded successfully to CMS')
+                res.status(200).send(directus_res)
               } catch (error) {
                 // If an error occurs, log the error and send a 500 status code
                 console.error(
