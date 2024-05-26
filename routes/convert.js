@@ -140,6 +140,11 @@ router.get('/', async (req, res) => {
                 // Log a success message
                 console.log(`File uploaded successfully to Directus for ${id}`)
 
+                // Delete the video, audio, and output files
+                fs.unlinkSync(videoPath)
+                fs.unlinkSync(audioPath)
+                fs.unlinkSync(outputPath)
+
                 res.status(200).send('File uploaded successfully to CMS')
               } catch (error) {
                 // If an error occurs, log the error and send a 500 status code
