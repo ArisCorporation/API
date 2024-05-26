@@ -40,16 +40,19 @@ router.get('/', async (req, res) => {
   const info = await ytdl.getInfo(videoUrl)
   // Get the video title and sanitize it
   const title = info.videoDetails.title
-    .replace(/[^a-z0-9]/gi, '_')
-    .toLowerCase()
+  // .replace(/[^a-z0-9]/gi, '_')
+  // .toLowerCase()
 
   // Log the video title
   console.log(`Video title for ${id}: ${title}`)
 
+  // Set the file type to the query parameter or default to 'webm'
+  const fileFormat = req.query.format || 'webm'
+
   // Define the path for the video, audio and output files
   const videoPath = path.join(__dirname, `../tmp/${id}_video.mp4`)
   const audioPath = path.join(__dirname, `../tmp/${id}_audio.mp3`)
-  const outputPath = path.join(__dirname, `../tmp/${id}.webm`)
+  const outputPath = path.join(__dirname, `../tmp/${id}.${fileFormat}`)
 
   // Create a stream for the video and audio data
   const videoStream = ytdl(videoUrl, { quality: 'highestvideo' })
@@ -65,7 +68,7 @@ router.get('/', async (req, res) => {
         ffmpeg()
           .input(videoPath) // Input the video file
           .input(audioPath) // Input the audio file
-          .format('webm') // Set the output format to webm
+          .format(fileFormat) // Set the output format to webm
           .on('progress', function (progress) {
             // Log the progress of the ffmpeg process
             console.log(
@@ -82,7 +85,7 @@ router.get('/', async (req, res) => {
             // If the 'dl' query parameter is not set to 'false', download the output file
             if (req.query.dl !== 'false') {
               // Use the 'download' method of the response object to start a file download
-              res.download(outputPath, `${title}.webm`, (err) => {
+              res.download(outputPath, `${title}.${fileFormat}`, (err) => {
                 // If an error occurs during the download, log the error and send a 500 status code
                 if (err) {
                   console.error(`Error downloading file for ${id}: `, err)
@@ -120,10 +123,13 @@ router.get('/', async (req, res) => {
                 // Get the output file
                 // const fileData = await fs.promises.readFile(outputPath)
                 const fileObject = new Blob([fs.readFileSync(outputPath)], {
-                  type: 'video/webm',
+                  type: 'video/' + fileFormat,
                 })
                 // Define the file name
-                const fileName = `${title}.webm`
+                const fileName = `${title}.${fileFormat}`
+                  .replace(/[^a-z0-9]/gi, '_')
+                  .toLowerCase()
+
                 // Get the folder ID from the request
                 const folderId = req.query.folder
 
