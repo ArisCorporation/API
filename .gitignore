@@ -4,11 +4,5 @@ logs
 yarn-debug.log*
 yarn-error.log*
 
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Dependency directories
+# Dependency directory
 node_modules/
