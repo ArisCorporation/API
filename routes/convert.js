@@ -139,6 +139,8 @@ router.get('/', async (req, res) => {
 
                 // Log a success message
                 console.log(`File uploaded successfully to Directus for ${id}`)
+
+                res.status(200).send('File uploaded successfully to CMS')
               } catch (error) {
                 // If an error occurs, log the error and send a 500 status code
                 console.error(
