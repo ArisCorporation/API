@@ -6,7 +6,8 @@ const express = require('express'),
   ffmpeg = require('fluent-ffmpeg'),
   fs = require('fs'),
   path = require('path'),
-  { v4: uuidv4 } = require('uuid')
+  { v4: uuidv4 } = require('uuid'),
+  { Directus } = require('@directus/sdk-js')
 
 router.get('/', async (req, res) => {
   req.setTimeout(12000000, () => {
@@ -33,7 +34,7 @@ router.get('/', async (req, res) => {
 
   const videoPath = path.join(__dirname, `../tmp/${id}_video.mp4`)
   const audioPath = path.join(__dirname, `../tmp/${id}_audio.mp3`)
-  const outputPath = path.join(__dirname, `../tmp/${id}.mp4`)
+  const outputPath = path.join(__dirname, `../tmp/${id}.webm`)
 
   const videoStream = ytdl(videoUrl, { quality: 'highestvideo' })
   const audioStream = ytdl(videoUrl, { quality: 'highestaudio' })
@@ -54,20 +55,56 @@ router.get('/', async (req, res) => {
           .on('error', (error) => {
             console.error(`Error processing for ${id}: `, error)
           })
-          .on('end', () => {
+          .on('end', async () => {
             console.log(`FFMPEG processing finished for ${id}`)
-            res.download(outputPath, `${title}.webm`, (err) => {
-              if (err) {
-                console.error(`Error downloading file for ${id}: `, err)
-                res.status(500).send('Error downloading file')
-              } else {
-                console.log(`File downloaded successfully for ${id}`)
-                fs.unlinkSync(videoPath)
-                fs.unlinkSync(audioPath)
-                fs.unlinkSync(outputPath)
-                console.log(`Files deleted successfully for ${id}`)
+            if (req.query.dl !== 'false') {
+              res.download(outputPath, `${title}.webm`, (err) => {
+                if (err) {
+                  console.error(`Error downloading file for ${id}: `, err)
+                  res.status(500).send('Error downloading file')
+                } else {
+                  console.log(`File downloaded successfully for ${id}`)
+                  fs.unlinkSync(videoPath)
+                  fs.unlinkSync(audioPath)
+                  fs.unlinkSync(outputPath)
+                  console.log(`Files deleted successfully for ${id}`)
+                }
+              })
+            }
+            if (req.query.uploadcms === 'true') {
+              const directusToken = req.headers['cms-token']
+              if (!directusToken) {
+                console.error(`Directus token not provided for ${id}`)
+                res.status(400).send('Directus token not provided')
+                return
               }
-            })
+
+              const directus = new Directus('https://cms.ariscorp.de', {
+                auth: {
+                  token: directusToken,
+                },
+              })
+
+              try {
+                const fileData = await fs.promises.readFile(outputPath)
+                const fileName = `${title}.webm`
+                const folderId = req.query.folder
+
+                await directus.files.uploadFile({
+                  filename_download: fileName,
+                  data: fileData,
+                  folder: folderId,
+                })
+
+                console.log(`File uploaded successfully to Directus for ${id}`)
+              } catch (error) {
+                console.error(
+                  `Error uploading file to Directus for ${id}: `,
+                  error
+                )
+                res.status(500).send('Error uploading file to Directus')
+              }
+            }
           })
           .save(outputPath)
       })
