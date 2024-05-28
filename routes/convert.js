@@ -12,8 +12,8 @@ const express = require('express'),
 
 // Route handler for GET requests
 router.get('/', async (req, res) => {
-  // Set a 60 minutes timeout for the request
-  req.setTimeout(3600000, () => {
+  // Set a 150 minutes timeout for the request
+  req.setTimeout(9000000, () => {
     console.log('Request timed out')
     res.status(408).send('Request timed out')
   })
