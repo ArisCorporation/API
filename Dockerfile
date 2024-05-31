@@ -1,29 +1,23 @@
-# Use the official Node.js LTS Alpine image as the base image
+# Use the official Node.js 16 image as the base image
 FROM node:lts-alpine
 
 # Update the package list and install ffmpeg
 RUN apk update && apk add ffmpeg
 
-# Create the /usr/src/app directory in the container
-RUN mkdir -p /usr/src/app
+# Set the working directory inside the container
+WORKDIR /app
 
-# Set /usr/src/app as the working directory
-WORKDIR /usr/src/app
+# Copy package.json and package-lock.json to the container
+COPY package*.json ./
 
-# Copy the package.json file from your host to the present location (.) in your image (i.e., /usr/src/app/)
-COPY package.json /usr/src/app/
-
-# Install the 'forever' package globally
-RUN npm install forever -g
-
-# Install the dependencies in the package.json
+# Install project dependencies
 RUN npm install
 
-# Copy the rest of your app's source code from your host to your image filesystem.
-COPY . /usr/src/app
+# Copy the rest of the application source code to the container
+COPY . .
 
-# Expose port 8080 in the container
-EXPOSE 8080
+# Expose the port your Nest.js application is listening on
+EXPOSE 3000
 
-# Define the command to run your app using CMD which defines your runtime.
-CMD [ "npm", "start" ]
+# Command to start your Nest.js application
+CMD [ "npm", "run", "start:prod" ]
