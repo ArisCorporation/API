@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Headers,
+  HttpException,
   Post,
   UseInterceptors,
 } from '@nestjs/common';
@@ -118,7 +119,7 @@ async function fetchLiveShipList(): Promise<any[]> {
     const { data: response } = await axios.get(
       cms_url + 'items/ships?limit=-1',
     );
-    return response;
+    return response.data;
   } catch (error) {
     throw new Error('Error fetching live ship list: ' + error);
   }
@@ -228,9 +229,7 @@ async function createShipObject(
     p4kShipList.find((ship) => ship.ClassName === p4kId) || null;
 
   const getLiveData = () =>
-    Array.isArray(liveShipList)
-      ? liveShipList.find((ship) => ship.sm_id === shipData.id) || {}
-      : {};
+    liveShipList.find((ship) => ship.sm_id === shipData.id) || {};
 
   const getFlData = () =>
     flShipList.find(
@@ -474,12 +473,12 @@ async function updateOrCreateShips(
     for (const ship of ships) {
       if (!ship) continue;
       // Check if ship already exists on cms_url
-      const { data: existingShip } = await axios.get(
-        `${cms_url}items/ships/${ship?.id}`,
-      );
-      // const existingShip = await fetch(
-      //   `${cms_url}items/ships/${ship?.id}`,
-      // ).catch(() => null);
+      const { data: existingShip } = await axios
+        .get(`${cms_url}items/ships/${ship?.id}`)
+        .catch((error) => {
+          if (error.response.status === 403) return { data: null };
+          throw error;
+        });
 
       if (existingShip) {
         // Get the field_overwrite for the existing ship
@@ -510,6 +509,8 @@ async function updateOrCreateShips(
           console.error(existingShip.data);
         }
       } else {
+        console.log(ship.name);
+        console.log(existingShip);
         // console.log(ship.store_image_url);
         const store_image_id = ship.store_image_url
           ? await importImage(
@@ -527,10 +528,10 @@ async function updateOrCreateShips(
     }
     return ships;
   } catch (error) {
-    console.error('Error updating or creating ships:', error);
+    console.error('Error updating or creating ships: ', error);
     return {
       status: 'error',
-      message: 'Error updating or creating ships:' + error,
+      message: 'Error updating or creating ships: ' + error,
     };
   }
 }
@@ -540,6 +541,10 @@ async function updateOrCreateShips(
 export class UpdateController {
   @Post()
   async postUpdate(@Headers() headers) {
+    const token = headers['cms-token'];
+
+    if (!token) throw new HttpException('Directus token not provided', 400);
+
     // Fetch the ship list from sm_url
     const shipList = await fetchShipList();
 
@@ -569,7 +574,7 @@ export class UpdateController {
       ),
     );
 
-    return await updateOrCreateShips(ships, shipList, headers['cms-token']);
+    return await updateOrCreateShips(ships, shipList, token);
   }
 
   @Get()
