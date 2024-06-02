@@ -87,7 +87,10 @@ async function fetchShipList(): Promise<any[]> {
     const { data: response } = await axios.get(sm_url);
     return response.data;
   } catch (error) {
-    throw new Error('Error fetching ship list: ' + error);
+    // throw new Error('Error fetching ship list: ' + error);
+    // console.error('Error fetching ship list: ' + error);
+    // return [];
+    throw new HttpException('Error fetching ship list', 500);
   }
 }
 
@@ -97,7 +100,10 @@ async function fetchP4kShipList(): Promise<any[]> {
     const { data: response } = await axios.get(p4k_url + 'ships.json');
     return response;
   } catch (error) {
-    throw new Error('Error fetching p4k ship list: ' + error);
+    // throw new Error('Error fetching p4k ship list: ' + error);
+    // console.error('Error fetching p4k ship list: ' + error);
+    // return [];
+    throw new HttpException('Error fetching p4k ship list', 500);
   }
 }
 
@@ -109,7 +115,10 @@ async function fetchP4kShipPorts(id: string): Promise<any> {
     );
     return response;
   } catch (error) {
-    throw new Error('Error fetching p4k ship ports: ' + error);
+    // throw new Error('Error fetching p4k ship ports: ' + error);
+    // console.error('Error fetching p4k ship ports: ' + error);
+    // return [];
+    throw new HttpException('Error fetching p4k ship ports', 500);
   }
 }
 
@@ -121,7 +130,10 @@ async function fetchLiveShipList(): Promise<any[]> {
     );
     return response.data;
   } catch (error) {
-    throw new Error('Error fetching live ship list: ' + error);
+    // throw new Error('Error fetching live ship list: ' + error);
+    // console.error('Error fetching live ship list: ' + error);
+    // return [];
+    throw new HttpException('Error fetching live ship list', 500);
   }
 }
 
@@ -147,7 +159,10 @@ async function fetchFlShipList(): Promise<any[]> {
 
     return allData;
   } catch (error) {
-    throw new Error('Error fetching FL ship list: ' + error);
+    // throw new Error('Error fetching FL ship list: ' + error);
+    // console.error('Error fetching FL ship list: ' + error);
+    // return [];
+    throw new HttpException('Error fetching FL ship list', 500);
   }
 }
 
@@ -159,7 +174,10 @@ async function fetchCompanies(): Promise<any[]> {
     );
     return response.data;
   } catch (error) {
-    throw new Error('Error fetching companies: ' + error);
+    // throw new Error('Error fetching companies: ' + error);
+    // console.error('Error fetching companies: ' + error);
+    // return [];
+    throw new HttpException('Error fetching companies', 500);
   }
 }
 
@@ -194,8 +212,10 @@ async function createShipObject(
   const skippedShips = [
     'Anvil Ballista Snowblind',
     'Anvil Ballista Dunestalker',
+    'Anvil Ballista Dunestalker',
     'Carrack w/C8X',
     'Carrack Expedition w/C8X',
+    'Carrack Expedition',
     'Cutlass Black Best In Show Edition',
     'Carrack Expedition',
     'Constellation Phoenix Emerald',
@@ -207,6 +227,8 @@ async function createShipObject(
     'Argo Mole Carbon Edition',
     'Argo Mole Talus Edition',
     'Nautilus Solstice Edition',
+    'Mustang Alpha Vindicator',
+    'P-72 Archimedes Emerald',
     '',
   ];
   if (skippedShips.includes(shipData.name)) return null;
@@ -509,8 +531,6 @@ async function updateOrCreateShips(
           console.error(existingShip.data);
         }
       } else {
-        console.log(ship.name);
-        console.log(existingShip);
         // console.log(ship.store_image_url);
         const store_image_id = ship.store_image_url
           ? await importImage(
