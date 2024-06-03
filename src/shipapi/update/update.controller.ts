@@ -13,6 +13,8 @@ const sm_url = 'https://robertsspaceindustries.com/ship-matrix/index';
 const fl_url = 'https://api.fleetyards.net/v1/';
 const p4k_url =
   'https://raw.githubusercontent.com/ArisCorporation/p4k/main/latest/json/v2/';
+const p4k_version_url =
+  'https://raw.githubusercontent.com/ArisCorporation/p4k/main/latest/version.txt';
 const cms_url = 'https://cms.ariscorp.de/';
 
 interface Ship {
@@ -71,14 +73,16 @@ interface Ship {
   insurance_expedited_time?: number | null;
   store_image?: string | null;
   store_image_url?: string | null;
-  commercial_video_id?: string | null;
-  ground?: boolean;
-  gravlev?: boolean;
-  description?: string | null;
-  history?: string | null;
-  rating?: number | null;
-  production_status?: string | null;
-  field_overwrite?: string[] | null;
+};
+
+// Function to fetch the p4k version from p4k_url
+async function getP4kVersion(): Promise<string> {
+  try {
+    const { data: response } = await axios.get(p4k_version_url);
+    return response?.trim();
+  } catch (error) {
+    throw new HttpException('Error fetching p4k version', 500);
+  }
 }
 
 // Function to fetch the ship list from sm_url
@@ -208,6 +212,7 @@ async function createShipObject(
   liveShipList: any[],
   flShipList: any[],
   companies: any[],
+  p4kVersion: string,
 ): Promise<Ship | null> {
   const skippedShips = [
     'Anvil Ballista Snowblind',
@@ -305,6 +310,7 @@ async function createShipObject(
     p4k_mode: !!p4kData,
     p4k_id: p4kData ? p4kData.ClassName : p4kId,
     p4k_name: p4kData ? p4kData.Name : null,
+    p4k_version: p4kData ? p4kVersion : null,
     manufacturer:
       companies?.find(
         (e) =>
@@ -565,6 +571,9 @@ export class UpdateController {
 
     if (!token) throw new HttpException('Directus token not provided', 400);
 
+    // Fetch the P4K version from p4k_url
+    const p4k_version = await getP4kVersion();
+
     // Fetch the ship list from sm_url
     const shipList = await fetchShipList();
 
@@ -590,6 +599,7 @@ export class UpdateController {
             liveShipList,
             flShipList,
             companies,
+            p4k_version,
           ),
       ),
     );
@@ -599,6 +609,9 @@ export class UpdateController {
 
   @Get()
   async getUpdate() {
+    // Fetch the P4K version from p4k_url
+    const p4k_version = await getP4kVersion();
+
     // Fetch the ship list from sm_url
     const shipList = await fetchShipList();
 
@@ -624,6 +637,7 @@ export class UpdateController {
             liveShipList,
             flShipList,
             companies,
+            p4k_version,
           ),
       ),
     );
