@@ -17,62 +17,106 @@ const p4k_version_url =
   'https://raw.githubusercontent.com/ArisCorporation/p4k/main/latest/version.txt';
 const cms_url = 'https://cms.ariscorp.de/';
 
-interface Ship {
-  id?: string;
-  status?: string;
-  name?: string | null;
-  slug?: string | null;
-  p4k_mode?: boolean;
-  p4k_id?: string | null;
-  p4k_name?: string | null;
-  p4k_version?: string | null;
-  manufacturer?: string;
-  store_url?: string | null;
-  sales_url?: string | null;
-  erkul_id?: string | null;
-  fl_id?: string | null;
-  sm_id?: number | null;
-  pledge_price?: number | null;
-  price?: number | null;
-  length?: number | null;
-  beam?: number | null;
-  height?: number | null;
-  mass?: number | null;
-  on_sale?: boolean;
-  cargo?: number | null;
-  production_note?: string | null;
-  live_patch?: string | null;
-  hydrogen_fuel_tanks?: number | null;
-  quantum_fuel_tanks?: number | null;
-  crew_min?: number | null;
-  crew_max?: number | null;
-  speed_max?: number | null;
-  speed_scm?: number | null;
-  zero_to_scm?: number | null;
-  zero_to_max?: number | null;
-  scm_to_zero?: number | null;
-  max_to_zero?: number | null;
-  pitch_max?: number | null;
-  roll_max?: number | null;
-  yaw_max?: number | null;
-  axis_acceleration_x?: number | null;
-  axis_acceleration_y?: number | null;
-  axis_acceleration_z?: number | null;
+type Ship = {
   acceleration_main?: number | null;
+  acceleration_maneuvering?: number | null;
   acceleration_retro?: number | null;
   acceleration_vtol?: number | null;
-  acceleration_maneuvering?: number | null;
+  api_ids?: string;
+  base_data?: string;
+  beam?: number | null;
   brochure?: string | null;
+  cargo?: number | null;
+  categorization?: string;
+  classification?: string | null;
+  commercial?: string | null;
+  commercial_video_id?: string | null;
+  commercials?: any[];
+  coolers?: any[] | null;
+  crew?: string;
+  crew_max?: string | null;
+  crew_min?: number | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  description?: string | null;
+  dimensions?: string;
+  erkul_id?: string | null;
+  field_overwrite?: string[] | null;
+  files?: string;
+  fl_id?: string | null;
+  focuses?: any[] | null;
+  gallery?: any[];
+  gravlev?: boolean | null;
+  ground?: boolean | null;
+  height?: number | null;
+  history?: string | null;
   hologram?: string | null;
-  loaners?: string[] | null;
-  variants?: string[] | null;
-  size?: number | null;
-  size_label?: string | null;
+  hydrogen_fuel_tanks?: any[] | null;
+  id?: string;
   insurance_claim_time?: number | null;
+  insurance_data?: string;
   insurance_expedited_cost?: number | null;
   insurance_expedited_time?: number | null;
+  length?: number | null;
+  live_patch?: string | null;
+  loaners?: any[];
+  main_thrusters?: any[] | null;
+  maneuvering_thrusters?: any[] | null;
+  manned_turrets?: any[] | null;
+  manufacturer?: string | null;
+  mass?: number | null;
+  max_to_zero?: number | null;
+  modules?: any[];
+  name?: string | null;
+  on_sale?: boolean | null;
+  ownable?: boolean | null;
+  p4k_id?: string | null;
+  p4k_mode?: boolean | null;
+  p4k_name?: string | null;
+  p4k_version?: string | null;
+  paints?: any[];
+  pilot_hardpoints?: any[] | null;
+  pitch?: number | null;
+  pledge_price?: number | null;
+  ports?: string;
+  power_plants?: any[] | null;
+  price?: number | null;
+  production_note?: string | null;
+  production_status?: string | null;
+  quantum_drives?: any[] | null;
+  quantum_fuel_tanks?: any[] | null;
+  rating?: string | null;
+  remote_turrets?: any[] | null;
+  retro_thrusters?: any[] | null;
+  roll?: number | null;
+  sales_url?: string | null;
+  scm_to_zero?: number | null;
+  shields?: any[] | null;
+  size?: number | null;
+  size_label?: string | null;
+  slug?: string | null;
+  sm_id?: number | null;
+  speed_max?: number | null;
+  speed_scm?: number | null;
+  status?: string;
   store_image?: string | null;
   store_image_url?: string | null;
+  store_url?: string | null;
+  tabs?: string;
+  'tabs--zj795'?: string;
+  tank_size_hydrogen?: number | null;
+  tank_size_quantum?: number | null;
+  tanks?: string;
+  user_created?: string | null;
+  user_hangars?: any[];
+  user_updated?: string | null;
+  user_wishlists?: any[];
+  variants?: any[];
+  velocity?: string;
+  vtol_thrusters?: any[] | null;
+  yaw?: number | null;
+  zero_to_max?: number | null;
+  zero_to_scm?: number | null;
 };
 
 // Function to fetch the p4k version from p4k_url
@@ -303,7 +347,7 @@ async function createShipObject(
   const liveData = getLiveData();
   const flData = getFlData();
 
-  const ship: any = {
+  const ship: Ship = {
     ...(liveData && { id: liveData.id }),
     status: 'published',
     name: shipData.name.trim(),
@@ -327,8 +371,10 @@ async function createShipObject(
     erkul_id: flData.erkulIdentifier,
     fl_id: flData.id,
     sm_id: shipData.id,
-    pledge_price: flData.pledgePrice,
-    price: flData.availability?.soldAt[0]?.prices.averageSellPrice ?? null,
+    pledge_price: flData.pledgePrice?.toFixed(5),
+    price:
+      flData.availability?.soldAt[0]?.prices.averageSellPrice?.toFixed(5) ??
+      null,
     length: p4kData ? p4kData.Length : shipData.length,
     beam: p4kData ? p4kData.Width : shipData.beam,
     height: p4kData ? p4kData.Height : shipData.height,
@@ -421,46 +467,98 @@ async function createShipObject(
     crew_min: shipData.min_crew,
     crew_max: shipData.max_crew,
     speed_max: p4kData
-      ? Math.round(p4kData.FlightCharacteristics?.MaxSpeed) ?? null
-      : Math.round(shipData.afterburner_speed) ?? null,
+      ? parseFloat(
+          Math.round(p4kData.FlightCharacteristics?.MaxSpeed)?.toFixed(5),
+        ) ?? null
+      : parseFloat(Math.round(shipData.afterburner_speed)?.toFixed(5)) ?? null,
     speed_scm: p4kData
-      ? Math.round(p4kData.FlightCharacteristics?.ScmSpeed) ?? null
-      : Math.round(shipData.scm_speed) ?? null,
+      ? parseFloat(
+          Math.round(p4kData.FlightCharacteristics?.ScmSpeed)?.toFixed(5),
+        ) ?? null
+      : parseFloat(Math.round(shipData.scm_speed)?.toFixed(5)) ?? null,
     zero_to_scm: p4kData
-      ? p4kData.FlightCharacteristics?.ZeroToScm ?? null
+      ? parseFloat(
+          parseFloat(p4kData.FlightCharacteristics?.ZeroToScm)?.toFixed(5),
+        ) ?? null
       : null,
     scm_to_zero: p4kData
-      ? p4kData.FlightCharacteristics?.ScmToZero ?? null
+      ? parseFloat(
+          parseFloat(p4kData.FlightCharacteristics?.ScmToZero)?.toFixed(5),
+        ) ?? null
       : null,
     zero_to_max: p4kData
-      ? p4kData.FlightCharacteristics?.ZeroToMax ?? null
+      ? parseFloat(
+          parseFloat(p4kData.FlightCharacteristics?.ZeroToMax)?.toFixed(5),
+        ) ?? null
       : null,
     max_to_zero: p4kData
-      ? p4kData.FlightCharacteristics?.MaxToZero ?? null
+      ? parseFloat(
+          parseFloat(p4kData.FlightCharacteristics?.MaxToZero)?.toFixed(5),
+        ) ?? null
       : null,
-    pitch: p4kData ? p4kData.FlightCharacteristics?.Pitch ?? null : null,
-    roll: p4kData ? p4kData.FlightCharacteristics?.Roll ?? null : null,
-    yaw: p4kData ? p4kData.FlightCharacteristics?.Yaw ?? null : null,
+    pitch: p4kData
+      ? parseFloat(
+          parseFloat(p4kData.FlightCharacteristics?.Pitch)?.toFixed(5),
+        ) ?? null
+      : null,
+    roll: p4kData
+      ? parseFloat(
+          parseFloat(p4kData.FlightCharacteristics?.Roll)?.toFixed(5),
+        ) ?? null
+      : null,
+    yaw: p4kData
+      ? parseFloat(
+          parseFloat(p4kData.FlightCharacteristics?.Yaw)?.toFixed(5),
+        ) ?? null
+      : null,
     acceleration_main: p4kData
-      ? p4kData.FlightCharacteristics?.Acceleration.Main ?? null
+      ? parseFloat(
+          parseFloat(p4kData.FlightCharacteristics?.Acceleration.Main)?.toFixed(
+            5,
+          ),
+        ) ?? null
       : null,
     acceleration_retro: p4kData
-      ? p4kData.FlightCharacteristics?.Acceleration.Retro ?? null
+      ? parseFloat(
+          parseFloat(
+            p4kData.FlightCharacteristics?.Acceleration.Retro,
+          )?.toFixed(5),
+        ) ?? null
       : null,
     acceleration_vtol: p4kData
-      ? p4kData.FlightCharacteristics?.Acceleration.Vtol ?? null
+      ? parseFloat(
+          parseFloat(p4kData.FlightCharacteristics?.Acceleration.Vtol)?.toFixed(
+            5,
+          ),
+        ) ?? null
       : null,
     acceleration_maneuvering: p4kData
-      ? p4kData.FlightCharacteristics?.Acceleration.Maneuvering ?? null
+      ? parseFloat(
+          parseFloat(
+            p4kData.FlightCharacteristics?.Acceleration.Maneuvering,
+          )?.toFixed(5),
+        ) ?? null
       : null,
     size: p4kData ? p4kData.Size : convertLongSizes(shipData.size),
-    insurance_claim_time: p4kData ? p4kData.Insurance?.StandardClaimTime : null,
-    insurance_expedited_cost: p4kData ? p4kData.Insurance?.ExpeditedCost : null,
-    insurance_expedited_time: p4kData
-      ? p4kData.Insurance?.ExpeditedClaimTime
+    insurance_claim_time: p4kData
+      ? p4kData.Insurance?.StandardClaimTime?.toFixed(5)
       : null,
-    ground: p4kData ? p4kData.IsVehicle : null,
-    gravlev: p4kData ? p4kData.IsGravlev : null,
+    insurance_expedited_cost: p4kData
+      ? p4kData.Insurance?.ExpeditedCost?.toFixed(5)
+      : null,
+    insurance_expedited_time: p4kData
+      ? p4kData.Insurance?.ExpeditedClaimTime?.toFixed(5)
+      : null,
+    ground: p4kData
+      ? p4kData.IsVehicle === true || p4kData.IsSpaceship === false
+        ? true
+        : false
+      : null,
+    gravlev: p4kData
+      ? p4kData.IsGravlev === true || p4kData.IsSpaceship === false
+        ? true
+        : false
+      : null,
     production_status: p4kData ? 'flight-ready' : flData.productionStatus,
     ...(liveData && { field_overwrite: liveData.field_overwrite }),
     // loaners: flData.loaners
@@ -500,6 +598,7 @@ async function updateOrCreateShips(
   try {
     for (const ship of ships) {
       if (!ship) continue;
+      console.log(ship?.name);
       // Check if ship already exists on cms_url
       const { data: existingShip } = await axios
         .get(`${cms_url}items/ships/${ship?.id}`)
@@ -507,49 +606,85 @@ async function updateOrCreateShips(
           if (error.response.status === 403) return { data: null };
           throw error;
         });
-
       if (existingShip) {
+        delete ship?.store_image_url;
         // Get the field_overwrite for the existing ship
         const fieldOverwrite = existingShip.data.field_overwrite || [];
 
-        // Update only the fields that are not in the field_overwrite array
+        // Check if any fields are different from the existing ship
+        let hasChanges = false;
         for (const field in ship as Ship) {
-          if (!fieldOverwrite.includes(field) && ship[field]) {
-            existingShip.data[field as keyof Ship] = ship[field];
+          if (
+            !fieldOverwrite.includes(field) &&
+            ship[field] !== existingShip.data[field as keyof Ship]
+          ) {
+            hasChanges = true;
+            break;
           }
         }
 
-        delete existingShip.data.description;
-        delete existingShip.data.commercial_video_id;
+        if (hasChanges) {
+          const new_data = {};
+          // Update only the fields that are different from the existing ship
+          for (const field in ship as Ship) {
+            let new_value = ship[field];
+            if (
+              new_value === 'undefined' ||
+              new_value === undefined ||
+              new_value === 'Infinity' ||
+              new_value === Infinity ||
+              new_value === 'NaN'
+            ) {
+              new_value = null;
+            }
 
-        // Update the ship on cms_url
-        // await axios.patch(
-        //   `${cms_url}items/ships/${existingShip.data.id}?access_token=-_XrBWIxuJyxZ-WhHgIFZAZs_7pxA0MY`,
-        //   existingShip.data,
-        // );
-        try {
-          await axios.patch(
-            `${cms_url}items/ships/${existingShip.data.id}?access_token=${token}`,
-            existingShip.data,
-          );
-        } catch (error) {
-          console.error('Error updating ship:', error);
-          console.error(existingShip.data);
+            if (
+              !fieldOverwrite.includes(field) &&
+              (typeof ship[field] === 'object'
+                ? JSON.stringify(new_value) !==
+                  JSON.stringify(existingShip.data[field])
+                : String(new_value) !== String(existingShip.data[field]))
+            ) {
+              new_data[field] = new_value;
+              console.log(
+                'Changed (' + ship.name + '):',
+                field,
+                existingShip.data[field],
+                new_value,
+              );
+            }
+          }
+
+          // delete existingShip.data.description;
+          // delete existingShip.data.commercial_video_id;
+
+          // Update the ship on cms_url
+          try {
+            // await axios.patch(
+            //   `${cms_url}items/ships/${existingShip.data.id}?access_token=${token}`,
+            //   new_data,
+            // );
+            new_data;
+          } catch (error) {
+            console.error('Error updating ship:', error);
+            console.error(new_data);
+          }
         }
       } else {
+        console.log('creating ship:', ship.name);
         // console.log(ship.store_image_url);
-        const store_image_id = ship.store_image_url
-          ? await importImage(
-              ship.store_image_url,
-              ship.name + '-store_image',
-              '067e2715-7947-44db-971b-754760f8b0b1',
-              token,
-            )
-          : null;
-        // ship.store_image = store_image_id;
-        if (store_image_id) ship.store_image = await store_image_id;
-        // Create the ship on cms_url
-        await axios.post(`${cms_url}items/ships?access_token=${token}`, ship);
+        // const store_image_id = ship.store_image_url
+        //   ? await importImage(
+        //       ship.store_image_url,
+        //       ship.name + '-store_image',
+        //       '067e2715-7947-44db-971b-754760f8b0b1',
+        //       token,
+        //     )
+        //   : null;
+        // // ship.store_image = store_image_id;
+        // if (store_image_id) ship.store_image = await store_image_id;
+        // // Create the ship on cms_url
+        // await axios.post(`${cms_url}items/ships?access_token=${token}`, ship);
       }
     }
     return ships;
