@@ -9,7 +9,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { TimeoutInterceptor } from 'src/timeout.service';
-import * as ytdl from 'ytdl-core';
+import * as ytdl from '@distube/ytdl-core';
 import * as ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';
 import * as path from 'path';
