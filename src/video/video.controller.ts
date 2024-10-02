@@ -16,7 +16,7 @@ import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { createDirectus, staticToken, uploadFiles, rest } from '@directus/sdk';
 
-ytdl.createAgent([
+const agent = ytdl.createAgent([
   {
     domain: '.youtube.com',
     expirationDate: 1761234033.09311,
@@ -379,7 +379,7 @@ export class VideoController {
     // Generate a unique ID for the request
     const id = uuidv4();
     // Get the video info from the YouTube video URL
-    const info = await ytdl.getInfo(videoUrl);
+    const info = await ytdl.getInfo(videoUrl, { agent });
     // Get the video title and sanitize it
     const title = info.videoDetails.title;
 
