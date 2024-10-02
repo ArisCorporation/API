@@ -1160,32 +1160,14 @@ async function formShipData(
       on_sale: flShip.onSale,
       // tank_size_hydrogen
       // tank_size_quantum
-      crew_min: isFinite(p4kShip ? p4kShip.WeaponCrew : smShip.min_crew)
-        ? p4kShip
-          ? p4kShip.WeaponCrew || null
-          : smShip.min_crew || null
-        : null,
-      crew_max: isFinite(p4kShip ? p4kShip.Crew : smShip.max_crew)
-        ? p4kShip
-          ? p4kShip.Crew || null
-          : smShip.max_crew || null
-        : null,
-      speed_max: isFinite(
-        p4kShip
-          ? p4kShip.FlightCharacteristics?.MaxSpeed || null
-          : smShip.afterburner_speed || null,
-      )
-        ? p4kShip
-          ? Math.round(p4kShip.FlightCharacteristics?.MaxSpeed) || null
-          : Math.round(smShip.afterburner_speed) || null
-        : null,
-      speed_scm: isFinite(
-        p4kShip ? p4kShip.FlightCharacteristics?.ScmSpeed : smShip.scm_speed,
-      )
-        ? p4kShip
-          ? Math.round(p4kShip.FlightCharacteristics?.ScmSpeed) || null
-          : Math.round(smShip.scm_speed)
-        : null,
+      crew_min: p4kShip ? p4kShip.Crew : smShip.min_crew,
+      crew_max: p4kShip ? p4kShip.WeaponCrew : smShip.max_crew,
+      speed_max: p4kShip
+        ? Math.round(p4kShip.FlightCharacteristics?.MaxSpeed)
+        : Math.round(smShip.afterburner_speed),
+      speed_scm: p4kShip
+        ? Math.round(p4kShip.FlightCharacteristics?.ScmSpeed) || null
+        : Math.round(smShip.scm_speed),
       zero_to_scm: isFinite(
         p4kShip ? p4kShip.FlightCharacteristics?.ZeroToScm : null,
       )
@@ -1266,7 +1248,7 @@ async function formShipData(
         : null,
       beam: isFinite(p4kShip ? p4kShip.Beam : smShip.beam)
         ? p4kShip
-          ? p4kShip.Beam || null
+          ? p4kShip.Width || null
           : smShip.beam || null
         : null,
       height: isFinite(p4kShip ? p4kShip.Height : smShip.height)
@@ -1330,7 +1312,7 @@ async function formShipData(
           : smShip.yaw_max || null
         : null,
       sm_id: Number(smShip.id),
-      cargo: smShip.cargocapacity,
+      cargo: p4kShip ? p4kShip.Cargo : smShip.cargocapacity,
       // modules
       // gallery
       // paints
