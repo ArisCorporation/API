@@ -21,7 +21,6 @@ import type p4kShip from './p4kShip.type';
 const sm_url = 'https://robertsspaceindustries.com/ship-matrix/index';
 const fl_url = 'https://api.fleetyards.net/v1/';
 const p4k_url = 'https://p4k.ariscorp.de/';
-const p4k_version_url = 'https://p4k.ariscorp.de/version.txt';
 const cms_url = 'https://cms.ariscorp.de/';
 
 const skippedShips = [
@@ -185,95 +184,193 @@ interface cmsTurretHardpoint {
   class_name: string;
   manufacturer: string;
 }
-interface cmsShip {
-  id?: string;
-  status?: string;
-  user_created?: string;
-  date_created?: string;
-  user_updated?: string;
-  date_updated?: string;
-  name?: string;
-  slug?: string;
-  p4k_mode?: boolean;
-  p4k_id?: string;
-  p4k_name?: string;
-  p4k_version?: string;
-  manufacturer?: string;
-  store_url?: string;
-  sales_url?: string;
-  erkul_id?: string;
-  fl_id?: string;
-  pledge_price?: string;
-  price?: string;
-  on_sale?: boolean;
-  production_note?: string | null;
-  live_patch?: string | null;
-  tank_size_hydrogen?: number | null;
-  tank_size_quantum?: number | null;
-  crew_min?: number;
-  crew_max?: string;
-  speed_max?: number;
-  speed_scm?: number;
-  zero_to_scm?: number;
-  zero_to_max?: number;
-  scm_to_zero?: number;
-  max_to_zero?: number;
-  brochure?: string | null;
-  hologram?: string | null;
-  size?: number;
-  size_label?: string | null;
-  insurance_claim_time?: string;
-  insurance_expedited_cost?: string;
-  insurance_expedited_time?: string;
-  store_image?: string;
-  commercial_video_id?: string;
-  ground?: boolean;
-  description?: string;
-  history?: string;
-  rating?: string;
-  production_status?: string;
-  field_overwrite?: string[];
-  ownable?: boolean | null;
-  classification?: string | null;
-  focuses?: string[] | null;
-  pilot_hardpoints?: cmsHardpoint[] | null;
-  remote_turrets?: cmsTurretHardpoint[] | null;
-  manned_turrets?: cmsTurretHardpoint[] | null;
-  shields?: cmsShield[] | null;
-  coolers?: cmsCooler[] | null;
-  quantum_drives?: cmsQd[] | null;
-  power_plants?: cmsPowerplant[] | null;
-  quantum_fuel_tanks?: cmsFuelTank[];
-  hydrogen_fuel_tanks?: cmsFuelTank[];
-  main_thrusters?: cmsThruster[] | null;
-  retro_thrusters?: cmsThruster[] | null;
-  vtol_thrusters?: cmsThruster[] | null;
-  maneuvering_thrusters?: cmsThruster[] | null;
-  mass?: number;
-  length?: number;
-  beam?: number;
-  height?: number;
-  gravlev?: boolean;
+// interface cmsShip {
+//   id?: string;
+//   status?: string;
+//   user_created?: string;
+//   date_created?: string;
+//   user_updated?: string;
+//   date_updated?: string;
+//   name?: string;
+//   slug?: string;
+//   p4k_mode?: boolean;
+//   p4k_id?: string;
+//   p4k_name?: string;
+//   p4k_version?: string;
+//   manufacturer?: string;
+//   store_url?: string;
+//   sales_url?: string;
+//   erkul_id?: string;
+//   fl_id?: string;
+//   pledge_price?: number;
+//   price?: number;
+//   on_sale?: boolean;
+//   production_note?: string | null;
+//   live_patch?: string | null;
+//   tank_size_hydrogen?: number | null;
+//   tank_size_quantum?: number | null;
+//   crew_min?: number;
+//   crew_max?: string;
+//   speed_max?: number;
+//   speed_scm?: number;
+//   zero_to_scm?: number;
+//   zero_to_max?: number;
+//   scm_to_zero?: number;
+//   max_to_zero?: number;
+//   brochure?: string | null;
+//   hologram?: string | null;
+//   size?: number;
+//   size_label?: string | null;
+//   insurance_claim_time?: string;
+//   insurance_expedited_cost?: string;
+//   insurance_expedited_time?: string;
+//   store_image?: string;
+//   commercial_video_id?: string;
+//   ground?: boolean;
+//   description?: string;
+//   history?: string;
+//   rating?: string;
+//   production_status?: string;
+//   field_overwrite?: string[];
+//   ownable?: boolean | null;
+//   classification?: string | null;
+//   focuses?: string[] | null;
+//   pilot_hardpoints?: cmsHardpoint[] | null;
+//   remote_turrets?: cmsTurretHardpoint[] | null;
+//   manned_turrets?: cmsTurretHardpoint[] | null;
+//   shields?: cmsShield[] | null;
+//   coolers?: cmsCooler[] | null;
+//   quantum_drives?: cmsQd[] | null;
+//   power_plants?: cmsPowerplant[] | null;
+//   quantum_fuel_tanks?: cmsFuelTank[];
+//   hydrogen_fuel_tanks?: cmsFuelTank[];
+//   main_thrusters?: cmsThruster[] | null;
+//   retro_thrusters?: cmsThruster[] | null;
+//   vtol_thrusters?: cmsThruster[] | null;
+//   maneuvering_thrusters?: cmsThruster[] | null;
+//   mass?: number;
+//   length?: number;
+//   beam?: number;
+//   height?: number;
+//   gravlev?: boolean;
+//   acceleration_main?: number | null;
+//   acceleration_retro?: number | null;
+//   acceleration_vtol?: number | null;
+//   acceleration_maneuvering?: number | null;
+//   pitch?: number;
+//   roll?: number;
+//   yaw?: number;
+//   sm_id?: number;
+//   cargo?: number;
+//   commercial?: boolean | null;
+//   user_wishlists?: number[];
+//   user_hangars?: number[];
+//   commercials?: number[];
+//   modules?: number[];
+//   gallery?: number[];
+//   paints?: number[];
+//   loaners?: number[];
+//   variants?: number[];
+// }
+
+type cmsShip = {
   acceleration_main?: number | null;
+  acceleration_maneuvering?: number | null;
   acceleration_retro?: number | null;
   acceleration_vtol?: number | null;
-  acceleration_maneuvering?: number | null;
-  pitch?: number;
-  roll?: number;
-  yaw?: number;
-  sm_id?: number;
-  cargo?: number;
-  commercial?: boolean | null;
-  user_wishlists?: number[];
-  user_hangars?: number[];
-  commercials?: number[];
-  modules?: number[];
-  gallery?: number[];
-  paints?: number[];
-  loaners?: number[];
-  variants?: number[];
-}
-
+  api_ids?: string;
+  base_data?: string;
+  beam?: number | null;
+  brochure?: string | null;
+  cargo?: number | null;
+  categorization?: string;
+  classification?: string | null;
+  commercial?: string | null;
+  commercial_video_id?: string | null;
+  commercials?: string[] | null;
+  coolers?: unknown | null;
+  crew?: string;
+  crew_max?: string | null;
+  crew_min?: number | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  description?: string | null;
+  dimensions?: string;
+  erkul_id?: string | null;
+  field_overwrite?: string[] | null;
+  files?: string;
+  fl_id?: string | null;
+  focuses?: unknown | null;
+  gallery?: string[] | null;
+  gravlev?: boolean | null;
+  ground?: boolean | null;
+  height?: number | null;
+  history?: string | null;
+  hologram?: string | null;
+  hydrogen_fuel_tanks?: unknown | null;
+  id?: string;
+  insurance_claim_time?: number | null;
+  insurance_data?: string;
+  insurance_expedited_cost?: number | null;
+  insurance_expedited_time?: number | null;
+  length?: number | null;
+  live_patch?: string | null;
+  loaners?: string[] | null;
+  main_thrusters?: unknown | null;
+  maneuvering_thrusters?: unknown | null;
+  manned_turrets?: unknown | null;
+  manufacturer?: string | null;
+  mass?: number | null;
+  max_to_zero?: number | null;
+  modules?: string[] | null;
+  name?: string | null;
+  on_sale?: boolean | null;
+  ownable?: boolean | null;
+  p4k_id?: string | null;
+  p4k_mode?: boolean | null;
+  p4k_name?: string | null;
+  p4k_version?: string | null;
+  paints?: string[] | null;
+  pilot_hardpoints?: unknown | null;
+  pitch?: number | null;
+  pledge_price?: number | null;
+  ports?: string;
+  power_plants?: unknown | null;
+  price?: number | null;
+  production_note?: string | null;
+  production_status?: string | null;
+  quantum_drives?: unknown | null;
+  quantum_fuel_tanks?: unknown | null;
+  rating?: string | null;
+  remote_turrets?: unknown | null;
+  retro_thrusters?: unknown | null;
+  roll?: number | null;
+  sales_url?: string | null;
+  scm_to_zero?: number | null;
+  shields?: unknown | null;
+  size?: number | null;
+  size_label?: string | null;
+  slug?: string | null;
+  sm_id?: number | null;
+  speed_max?: number | null;
+  speed_scm?: number | null;
+  status?: string;
+  store_image?: string | null;
+  store_url?: string | null;
+  tank_size_hydrogen?: number | null;
+  tank_size_quantum?: number | null;
+  tanks?: string;
+  user_created?: string | null;
+  user_hangars?: string[] | null;
+  user_updated?: string | null;
+  user_wishlists?: string[] | null;
+  variants?: string[] | null;
+  velocity?: string;
+  vtol_thrusters?: unknown | null;
+  yaw?: number | null;
+  zero_to_max?: number | null;
+  zero_to_scm?: number | null;
+};
 interface flShip {
   id?: string;
   scIdentifier?: string;
@@ -443,6 +540,14 @@ interface updatedShip {
 }
 interface updatedProps {
   [key: string]: { old: any; new: any };
+}
+
+function convertStringToNumber(str) {
+  if (typeof str === 'string') {
+    return Number(str);
+  } else {
+    return str;
+  }
 }
 
 // Helper functions
@@ -689,6 +794,7 @@ async function formShipData(
   p4kShip: any | null,
   cmsShip?: cmsShip,
   newData?: updatedShip,
+  p4kVersion?: string,
 ): Promise<cmsShip> {
   // Check if all data is available
   if (!smShip)
@@ -1149,74 +1255,50 @@ async function formShipData(
       p4k_mode: p4kShip ? true : false,
       p4k_id: p4kShip ? p4kShip.ClassName : null,
       p4k_name: p4kShip ? p4kShip.Name : null,
-      p4k_version: p4kShip ? p4kShip.p4kVersion : null,
+      p4k_version: p4kShip ? p4kVersion : null,
       manufacturer: manufacturerId,
       store_url: flShip.links.storeUrl,
       sales_url: flShip.links.salesPageUrl,
       erkul_id: flShip.erkulIdentifier,
       fl_id: flShip.id,
-      pledge_price: flShip.pledgePrice ? String(flShip.pledgePrice) : null,
-      price: flShip.lastPledgePrice ? String(flShip.lastPledgePrice) : null,
+      pledge_price: flShip.pledgePrice ? flShip.pledgePrice : null,
+      price: flShip.lastPledgePrice ? flShip.lastPledgePrice : null,
       on_sale: flShip.onSale,
       // tank_size_hydrogen
       // tank_size_quantum
       crew_min: p4kShip ? p4kShip.Crew : smShip.min_crew,
-      crew_max: p4kShip ? p4kShip.WeaponCrew : smShip.max_crew,
+      crew_max: (() => {
+        const crewMin = p4kShip ? p4kShip.Crew : smShip.min_crew;
+        const crewMax = p4kShip ? p4kShip.WeaponCrew : smShip.max_crew;
+        return crewMax >= crewMin ? crewMax : crewMin;
+      })(),
       speed_max: p4kShip
         ? Math.round(p4kShip.FlightCharacteristics?.MaxSpeed)
         : Math.round(smShip.afterburner_speed),
       speed_scm: p4kShip
-        ? Math.round(p4kShip.FlightCharacteristics?.ScmSpeed) || null
+        ? Math.round(p4kShip.FlightCharacteristics?.ScmSpeed)
         : Math.round(smShip.scm_speed),
-      zero_to_scm: isFinite(
-        p4kShip ? p4kShip.FlightCharacteristics?.ZeroToScm : null,
-      )
-        ? p4kShip
-          ? p4kShip.FlightCharacteristics?.ZeroToScm || null
-          : null
-        : null,
-      zero_to_max: isFinite(
-        p4kShip ? p4kShip.FlightCharacteristics?.ZeroToMax : null,
-      )
-        ? p4kShip
-          ? p4kShip.FlightCharacteristics?.ZeroToMax || null
-          : null
-        : null,
-      scm_to_zero: isFinite(
-        p4kShip ? p4kShip.FlightCharacteristics?.ScmToZero : null,
-      )
-        ? p4kShip
-          ? p4kShip.FlightCharacteristics?.ScmToZero || null
-          : null
-        : null,
-      max_to_zero: isFinite(
-        p4kShip ? p4kShip.FlightCharacteristics?.MaxToZero : null,
-      )
-        ? p4kShip
-          ? p4kShip.FlightCharacteristics?.MaxToZero || null
-          : null
-        : null,
+      // zero_to_scm: p4kShip
+      //   ? p4kShip.FlightCharacteristics?.ZeroToScm || null
+      //   : null,
+      // zero_to_max: p4kShip
+      //   ? p4kShip.FlightCharacteristics?.ZeroToMax || null
+      //   : null,
+      // scm_to_zero: p4kShip
+      //   ? p4kShip.FlightCharacteristics?.ScmToZero || null
+      //   : null,
+      // max_to_zero: p4kShip
+      //   ? p4kShip.FlightCharacteristics?.MaxToZero || null
+      //   : null,
       size: p4kShip ? p4kShip.Size : convertLongSizes(smShip.size),
-      insurance_claim_time: isFinite(
-        p4kShip ? p4kShip.Insurance?.StandardClaimTime : null,
-      )
-        ? p4kShip
-          ? p4kShip.Insurance?.StandardClaimTime || null
-          : null
+      insurance_claim_time: p4kShip
+        ? p4kShip.Insurance?.StandardClaimTime || null
         : null,
-      insurance_expedited_cost: isFinite(
-        p4kShip ? p4kShip.Insurance?.ExpeditedCost : null,
-      )
-        ? p4kShip
-          ? p4kShip.Insurance?.ExpeditedCost || null
-          : null
+      insurance_expedited_cost: p4kShip
+        ? p4kShip.Insurance?.ExpeditedCost || null
         : null,
-      insurance_expedited_time: isFinite(
-        p4kShip ? p4kShip.Insurance?.ExpeditedClaimTime : null,
-      )
-        ? p4kShip
-          ? p4kShip.Insurance?.ExpeditedClaimTime || null
-          : null
+      insurance_expedited_time: p4kShip
+        ? p4kShip.Insurance?.ExpeditedClaimTime || null
         : null,
       ground: p4kShip ? p4kShip.IsVehicle : null,
       gravlev: p4kShip ? p4kShip.IsGravlev : null,
@@ -1236,83 +1318,35 @@ async function formShipData(
       retro_thrusters: await getRetroThrusters(),
       vtol_thrusters: await getVtolThrusters(),
       maneuvering_thrusters: await getManeuveringThrusters(),
-      mass: isFinite(p4kShip ? p4kShip.Mass : smShip.mass)
-        ? p4kShip
-          ? p4kShip.Mass || null
-          : smShip.mass || null
-        : null,
-      length: isFinite(p4kShip ? p4kShip.Length : smShip.length)
-        ? p4kShip
-          ? p4kShip.Length || null
-          : smShip.length || null
-        : null,
-      beam: isFinite(p4kShip ? p4kShip.Beam : smShip.beam)
-        ? p4kShip
-          ? p4kShip.Width || null
-          : smShip.beam || null
-        : null,
-      height: isFinite(p4kShip ? p4kShip.Height : smShip.height)
-        ? p4kShip
-          ? p4kShip.Height || null
-          : smShip.height || null
-        : null,
-      acceleration_main: isFinite(
-        p4kShip
-          ? p4kShip.FlightCharacteristics?.Acceleration.Main || null
-          : smShip.xaxis_acceleration || null,
-      )
-        ? p4kShip
-          ? p4kShip.FlightCharacteristics?.Acceleration.Main || null
-          : smShip.xaxis_acceleration || null
-        : null,
-      acceleration_retro: isFinite(
-        p4kShip
-          ? p4kShip.FlightCharacteristics?.Acceleration.Retro || null
-          : smShip.yaxis_acceleration || null,
-      )
-        ? p4kShip
-          ? p4kShip.FlightCharacteristics?.Acceleration.Retro || null
-          : smShip.yaxis_acceleration || null
-        : null,
-      acceleration_vtol: isFinite(
-        p4kShip ? p4kShip.FlightCharacteristics?.Acceleration.Vtol : null,
-      )
-        ? p4kShip
-          ? p4kShip.FlightCharacteristics?.Acceleration.Vtol || null
-          : null
-        : null,
-      acceleration_maneuvering: isFinite(
-        p4kShip
-          ? p4kShip.FlightCharacteristics?.Acceleration.Maneuvering || null
-          : null,
-      )
-        ? p4kShip
-          ? p4kShip.FlightCharacteristics?.Acceleration.Maneuvering || null
-          : null
-        : null,
-      pitch: isFinite(
-        p4kShip ? p4kShip.FlightCharacteristics?.Pitch : smShip.pitch_max,
-      )
-        ? p4kShip
-          ? p4kShip.FlightCharacteristics?.Pitch || null
-          : smShip.pitch_max || null
-        : null,
-      roll: isFinite(
-        p4kShip ? p4kShip.FlightCharacteristics?.Roll : smShip.roll_max,
-      )
-        ? p4kShip
-          ? p4kShip.FlightCharacteristics?.Roll || null
-          : smShip.roll_max || null
-        : null,
-      yaw: isFinite(
-        p4kShip ? p4kShip.FlightCharacteristics?.Yaw : smShip.yaw_max,
-      )
-        ? p4kShip
-          ? p4kShip.FlightCharacteristics?.Yaw || null
-          : smShip.yaw_max || null
-        : null,
+      // mass: p4kShip ? p4kShip.Mass || null : smShip.mass || null,
+      mass: flShip ? flShip.metrics.mass : null,
+      length: p4kShip ? p4kShip.Length || null : smShip.length || null,
+      beam: p4kShip ? p4kShip.Width || null : smShip.beam || null,
+      height: p4kShip ? p4kShip.Height || null : smShip.height || null,
+      // acceleration_main: p4kShip
+      //   ? p4kShip.FlightCharacteristics?.Acceleration.Main || null
+      //   : smShip.xaxis_acceleration || null,
+      // acceleration_retro: p4kShip
+      //   ? p4kShip.FlightCharacteristics?.Acceleration.Retro || null
+      //   : smShip.yaxis_acceleration || null,
+      // acceleration_vtol: p4kShip
+      //   ? p4kShip.FlightCharacteristics?.Acceleration.Vtol || null
+      //   : null,
+      // acceleration_maneuvering: p4kShip
+      //   ? p4kShip.FlightCharacteristics?.Acceleration.Maneuvering || null
+      //   : null,
+      pitch: p4kShip
+        ? p4kShip.FlightCharacteristics?.Pitch || null
+        : smShip.pitch_max || null,
+      roll: p4kShip
+        ? p4kShip.FlightCharacteristics?.Roll || null
+        : smShip.roll_max || null,
+      yaw: p4kShip
+        ? p4kShip.FlightCharacteristics?.Yaw || null
+        : smShip.yaw_max || null,
       sm_id: Number(smShip.id),
-      cargo: p4kShip ? p4kShip.Cargo : smShip.cargocapacity,
+      // cargo: p4kShip ? p4kShip.Cargo : smShip.cargocapacity,
+      cargo: flShip ? flShip.metrics.cargo : null,
       // modules
       // gallery
       // paints
@@ -1339,7 +1373,11 @@ async function formShipData(
 }
 
 // Get new ships
-async function getNewShips(cmsShips: cmsShip[], smShips: smShip[]) {
+async function getNewShips(
+  cmsShips: cmsShip[],
+  smShips: smShip[],
+  p4kVersion: string,
+) {
   try {
     const newShips = smShips.filter(
       (smShip) =>
@@ -1347,7 +1385,6 @@ async function getNewShips(cmsShips: cmsShip[], smShips: smShip[]) {
           (cmsShip) => String(cmsShip.sm_id) === String(smShip.id),
         ),
     );
-    const p4kVersion = await axios.get(p4k_version_url);
 
     // Form ship data
     const shipData = await Promise.all(
@@ -1356,9 +1393,15 @@ async function getNewShips(cmsShips: cmsShip[], smShips: smShip[]) {
         try {
           const flShip = await getFlShip(smShip.id);
           const p4kShip = await getP4kShip(smShip);
-          if (p4kShip) p4kShip.p4kVersion = p4kVersion.data?.trim();
 
-          return await formShipData(smShip, flShip, p4kShip);
+          return await formShipData(
+            smShip,
+            flShip,
+            p4kShip,
+            null,
+            null,
+            p4kVersion,
+          );
         } catch (error) {
           console.error(error);
           httpError(500, 'Cannot get creation Ship Data for: ' + smShip.id);
@@ -1376,6 +1419,7 @@ async function getNewShips(cmsShips: cmsShip[], smShips: smShip[]) {
 async function getUpdatedShips(
   cmsShips: cmsShip[],
   smShips: smShip[],
+  p4kVersion: string,
 ): Promise<{ updatedShips: updatedShip[]; shipData: cmsShip[] }> {
   try {
     const shipList = smShips.filter((smShip) =>
@@ -1396,7 +1440,15 @@ async function getUpdatedShips(
         const p4kShip = await getP4kShip(smShip);
         const flShip = await getFlShip(smShip.id);
         // console.log(p4kShip);
-        const shipData = await formShipData(smShip, flShip, p4kShip);
+
+        const shipData = await formShipData(
+          smShip,
+          flShip,
+          p4kShip,
+          null,
+          null,
+          p4kVersion,
+        );
 
         const updatedProps: updatedProps = {};
 
@@ -1423,7 +1475,6 @@ async function getUpdatedShips(
     );
 
     // Form ship data
-    const p4kVersion = await axios.get(p4k_version_url);
     const shipData = await Promise.all(
       updatedShips.map(async (updatedShipData) => {
         try {
@@ -1435,7 +1486,6 @@ async function getUpdatedShips(
           );
           const flShip = await getFlShip(smShip.id);
           const p4kShip = await getP4kShip(smShip);
-          if (p4kShip) p4kShip.p4kVersion = p4kVersion.data?.trim();
 
           return await formShipData(
             smShip,
@@ -1443,6 +1493,7 @@ async function getUpdatedShips(
             p4kShip,
             cmsShip,
             updatedShipData,
+            p4kVersion,
           );
         } catch (error) {
           httpError(
@@ -1560,11 +1611,20 @@ export class UpdateController {
     const token = headers['cms-token'];
     if (!token) httpError(400, 'No token provided');
 
+    const p4kVersionRes = await fetch(
+      'https://p4k.ariscorp.de/version.txt',
+    ).then((x) => x.text());
+    const p4kVersion = p4kVersionRes.trim();
+
     const cmsShipList = await getCMSShips();
     const smShipList = await getSMShips();
 
-    const createdShips = await getNewShips(cmsShipList, smShipList);
-    const updatedShips = await getUpdatedShips(cmsShipList, smShipList);
+    const createdShips = await getNewShips(cmsShipList, smShipList, p4kVersion);
+    const updatedShips = await getUpdatedShips(
+      cmsShipList,
+      smShipList,
+      p4kVersion,
+    );
 
     const formedCreatedShips = formCreatedShips(createdShips, smShipList);
     const formedUpdatedShips = formUpdatedShips(
@@ -1588,8 +1648,17 @@ export class UpdateController {
     const cmsShipList = await getCMSShips();
     const smShipList = await getSMShips();
 
-    const createdShips = await getNewShips(cmsShipList, smShipList);
-    const updatedShips = await getUpdatedShips(cmsShipList, smShipList);
+    const p4kVersionRes = await fetch(
+      'https://p4k.ariscorp.de/version.txt',
+    ).then((x) => x.text());
+    const p4kVersion = p4kVersionRes.trim();
+
+    const createdShips = await getNewShips(cmsShipList, smShipList, p4kVersion);
+    const updatedShips = await getUpdatedShips(
+      cmsShipList,
+      smShipList,
+      p4kVersion,
+    );
 
     const formedCreatedShips = formCreatedShips(createdShips, smShipList);
     const formedUpdatedShips = formUpdatedShips(
