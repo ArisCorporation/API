@@ -1262,7 +1262,9 @@ async function formShipData(
       erkul_id: flShip.erkulIdentifier,
       fl_id: flShip.id,
       pledge_price: flShip.pledgePrice ? flShip.pledgePrice : null,
-      price: flShip.lastPledgePrice ? flShip.lastPledgePrice : null,
+      price: flShip?.availability?.soldAt?.length
+        ? flShip?.availability?.soldAt[0]?.prices?.averageSellPrice
+        : null,
       on_sale: flShip.onSale,
       // tank_size_hydrogen
       // tank_size_quantum
