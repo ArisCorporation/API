@@ -379,7 +379,7 @@ interface flShip {
   availability?: {
     listedAt?: string[];
     boughtAt?: string[];
-    soldAt?: string[];
+    soldAt?: any[];
     rentalAt?: string[];
   };
   brochure?: string;
