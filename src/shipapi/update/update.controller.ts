@@ -1292,7 +1292,6 @@ async function formShipData(
       // max_to_zero: p4kShip
       //   ? p4kShip.FlightCharacteristics?.MaxToZero || null
       //   : null,
-      size: p4kShip ? p4kShip.Size : convertLongSizes(smShip.size),
       insurance_claim_time: p4kShip
         ? p4kShip.Insurance?.StandardClaimTime || null
         : null,
