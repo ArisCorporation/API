@@ -42,6 +42,9 @@ lerna-debug.log*
 .env.production.local
 .env.local
 
+# Secret Files
+build.sh
+
 # temp directory
 .temp
 .tmp
