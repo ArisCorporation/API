@@ -1,7 +1,7 @@
 ## Installation
 
 ```bash
-$ docker build --platform linux/amd64 -t ghcr.io/ariscorporation/ariscorp-ytdl-api:latest .
+$ sudo docker build --platform linux/amd64 --label "org.opencontainers.image.source=https://github.com/ArisCorporation/API" -t ghcr.io/ariscorporation/api:latest .
 
-$ docker push ghcr.io/ariscorporation/ariscorp-ytdl-api:latest
+$ sudo docker push ghcr.io/ariscorporation/api:latest
 ```
