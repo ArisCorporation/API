@@ -7,7 +7,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { TimeoutInterceptor } from 'src/timeout.service';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import {
   createDirectus,
   staticToken,
@@ -22,6 +22,12 @@ const sm_url = 'https://robertsspaceindustries.com/ship-matrix/index';
 const fl_url = 'https://api.fleetyards.net/v1/';
 const p4k_url = 'https://p4k.ariscorp.de/';
 const cms_url = 'https://cms.ariscorp.de/';
+
+const axiosOptions = {
+  timeout: 20000,
+  maxRedirects: 5,
+  maxContentLength: 1024 * 1024,
+};
 
 const skippedShips = [
   'Anvil Ballista Snowblind',
@@ -704,7 +710,7 @@ async function getP4kShip(smShip: smShip): Promise<p4kShip> {
       p4kIdModified = p4kIdModified.toUpperCase();
     }
 
-    const p4kShips = await axios.get(p4k_url + 'ships.json');
+    const p4kShips = await axios.get(p4k_url + 'ships.json', axiosOptions);
     const p4kShip = p4kShips.data.find(
       (ship: p4kShip) =>
         ship.ClassName?.toLowerCase() === p4kIdModified.toLowerCase(),
@@ -712,6 +718,7 @@ async function getP4kShip(smShip: smShip): Promise<p4kShip> {
     if (!p4kShip?.ClassName) return;
     const p4kPorts = await axios.get(
       p4k_url + 'ships/' + p4kShip.ClassName?.toLowerCase() + '-ports.json',
+      axiosOptions,
     );
 
     if (p4kPorts.data === '404: Not Found') return;
@@ -735,7 +742,17 @@ async function getP4kShip(smShip: smShip): Promise<p4kShip> {
     //     httpError(500, 'P4K API not available');
     //   }
     // } else {
-    console.error('Unexpected error:', error);
+    if (error instanceof AxiosError) {
+      if (error.code === 'ETIMEDOUT') {
+        console.error('Request timed out');
+      } else if (error.code === 'ENETUNREACH') {
+        console.error('Network unreachable');
+      } else {
+        console.error(`Axios error: ${error.message}`);
+      }
+    } else {
+      console.error(`Unexpected error: ${error}`);
+    }
     httpError(500, 'P4K API not available');
     // }
     // console.log(error);
